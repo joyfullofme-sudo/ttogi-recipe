@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#fffaf5">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="또기 레시피">
+<title>또기 레시피</title>
+<style>
+:root{--bg:#fffaf5;--card:#fff;--ink:#241f1a;--muted:#7b726a;--accent:#e96835;--line:#eadfd6;--warn:#b86d00}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Arial,sans-serif}
+header{position:sticky;top:0;z-index:4;background:rgba(255,250,245,.94);backdrop-filter:blur(14px);padding:calc(env(safe-area-inset-top) + 12px) 16px 12px;border-bottom:1px solid var(--line)}
+h1{font-size:21px;margin:0}.sub{font-size:12px;color:var(--muted);margin-top:3px}main{padding:14px 14px calc(92px + env(safe-area-inset-bottom));max-width:720px;margin:auto}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;margin:0 0 12px;box-shadow:0 4px 18px rgba(54,38,22,.04)}
+.row{display:flex;gap:10px;align-items:center}.grow{flex:1}.between{display:flex;justify-content:space-between;gap:12px;align-items:center}
+button{border:0;border-radius:13px;padding:11px 14px;font-weight:700;font-size:15px;background:#f3e9e1;color:var(--ink)}button.primary{background:var(--accent);color:#fff}button.small{padding:7px 10px;font-size:13px;border-radius:10px}button.danger{background:#fff0ed;color:#a83322}
+input,textarea{width:100%;border:1px solid var(--line);border-radius:12px;padding:11px 12px;font-size:16px;background:#fff;color:var(--ink)}textarea{min-height:110px;resize:vertical}label{display:block;font-size:12px;font-weight:700;color:var(--muted);margin:10px 0 5px}
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:5;background:rgba(255,255,255,.96);backdrop-filter:blur(16px);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(4,1fr);padding:7px 6px calc(7px + env(safe-area-inset-bottom))}.tab{background:transparent;padding:7px 3px;color:var(--muted);font-size:11px}.tab span{display:block;font-size:22px;line-height:1.2}.tab.active{color:var(--accent)}
+.hidden{display:none!important}.recipe-title{font-size:18px;font-weight:800;margin:0 0 4px}.meta,.hint{font-size:12px;color:var(--muted);line-height:1.5}ul.clean{list-style:none;padding:0;margin:8px 0}ul.clean li{padding:9px 0;border-bottom:1px solid #f1e8e1}ul.clean li:last-child{border:0}.check{display:flex;align-items:flex-start;gap:10px}.check input{width:22px;height:22px;margin-top:0}.done{text-decoration:line-through;color:#a9a19a}.empty{text-align:center;color:var(--muted);padding:32px 12px}.sectionTitle{font-size:14px;font-weight:800;margin:16px 0 8px}.toast{position:fixed;left:50%;bottom:100px;transform:translateX(-50%);background:#231f1c;color:#fff;padding:10px 14px;border-radius:12px;font-size:13px;z-index:10;opacity:0;transition:.2s;pointer-events:none}.toast.show{opacity:1}.hero{padding:16px;background:linear-gradient(135deg,#fff4e8,#fff);border-radius:18px;border:1px solid var(--line);margin-bottom:12px}.hero strong{font-size:19px}.warn{color:var(--warn)}
+</style>
+</head>
+<body>
+<header><h1>🍳 또기 레시피</h1><div class="sub">내 아이폰용 레시피 + 장보기</div></header>
+<main>
+<section id="inboxView">
+  <div class="hero"><strong>레시피 가져오기</strong><div class="hint" style="margin-top:6px">Instagram · TikTok · YouTube · 웹 레시피 링크를 저장하고 장보기 목록으로 만들어요.</div></div>
+  <div class="card">
+    <div class="row"><button class="primary grow" id="pasteBtn">📋 클립보드 붙여넣기</button><button id="newBtn">＋ 새로</button></div>
+    <label>원본 링크</label><input id="sourceUrl" placeholder="Instagram / TikTok / YouTube / 블로그 URL" inputmode="url">
+    <label>레시피 제목</label><input id="title" placeholder="예: 일본식 다시마 조림">
+    <label>재료 · 설명 텍스트</label><textarea id="rawText" placeholder="한 줄에 재료 하나씩 붙여넣어 주세요.&#10;예) Ground beef 1 lb&#10;Onion 1/2&#10;Soy sauce 2 tbsp"></textarea>
+    <div class="row" style="margin-top:10px"><button class="primary grow" id="saveRecipeBtn">레시피 저장</button><button id="parseBtn">재료 확인</button></div>
+    <div class="hint" style="margin-top:8px">현재 버전은 폰 안에서 기본 재료 파싱을 합니다. AI 자동 추출은 다음 단계에서 서버를 연결하면 됩니다.</div>
+  </div>
+  <div id="importNotice" class="card hidden"></div>
+</section>
+<section id="recipesView" class="hidden"><div id="recipeList"></div></section>
+<section id="shoppingView" class="hidden"><div class="between"><div><div class="recipe-title">🛒 장보기</div><div class="meta">선택한 레시피 재료를 합쳐서 표시</div></div><button class="small" id="clearChecked">체크 삭제</button></div><div id="shoppingList" style="margin-top:12px"></div></section>
+<section id="pantryView" class="hidden">
+  <div class="card"><div class="recipe-title">🏠 Pantry</div><div class="hint">집에 항상 있는 재료는 장보기에서 자동 제외돼요.</div><div class="row" style="margin-top:10px"><input id="pantryInput" class="grow" placeholder="예: soy sauce"><button class="primary" id="addPantry">추가</button></div></div>
+  <div id="pantryList"></div>
+  <div class="card"><div class="recipe-title">📱 아이폰 설치</div><div class="hint">Safari에서 이 페이지를 연 뒤 <b>공유</b> → <b>홈 화면에 추가</b>를 누르면 앱 아이콘처럼 사용할 수 있어요.</div></div>
+</section>
+</main>
+<nav class="tabs"><button class="tab active" data-view="inbox"><span>📥</span>받기</button><button class="tab" data-view="recipes"><span>📖</span>레시피</button><button class="tab" data-view="shopping"><span>🛒</span>장보기</button><button class="tab" data-view="pantry"><span>🏠</span>Pantry</button></nav>
+<div class="toast" id="toast"></div>
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const KEY='ttogi_recipe_pwa_v1';let db=load();
+function load(){try{return JSON.parse(localStorage.getItem(KEY))||{recipes:[],shopping:[],pantry:[]}}catch{return{recipes:[],shopping:[],pantry:[]}}}
+function save(){localStorage.setItem(KEY,JSON.stringify(db));renderAll()}
+function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1700)}
+function id(){return crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random())}
+function esc(s=''){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function norm(s=''){return s.trim().toLowerCase().replace(/\s+/g,' ')}
+const unitMap={tsp:{base:'tsp',f:1},teaspoon:{base:'tsp',f:1},teaspoons:{base:'tsp',f:1},tbsp:{base:'tsp',f:3},tablespoon:{base:'tsp',f:3},tablespoons:{base:'tsp',f:3},cup:{base:'tsp',f:48},cups:{base:'tsp',f:48},oz:{base:'oz',f:1},ounce:{base:'oz',f:1},ounces:{base:'oz',f:1},lb:{base:'oz',f:16},lbs:{base:'oz',f:16},pound:{base:'oz',f:16},pounds:{base:'oz',f:16}};
+function fracNum(s){if(!s)return null;s=s.trim().replace('½','.5').replace('¼','.25').replace('¾','.75').replace('⅓','.333').replace('⅔','.667');if(/^\d+\s+\d+\/\d+$/.test(s)){let[a,b]=s.split(/\s+/);let[n,d]=b.split('/').map(Number);return Number(a)+n/d}if(/^\d+\/\d+$/.test(s)){let[n,d]=s.split('/').map(Number);return n/d}let n=Number(s);return Number.isFinite(n)?n:null}
+function fmt(n){if(Math.abs(n-Math.round(n))<.01)return String(Math.round(n));const fr=[[.25,'¼'],[.333,'⅓'],[.5,'½'],[.667,'⅔'],[.75,'¾']];let whole=Math.floor(n),r=n-whole;let f=fr.reduce((a,b)=>Math.abs(b[0]-r)<Math.abs(a[0]-r)?b:a);if(Math.abs(f[0]-r)<.05)return(whole?whole+' ':'')+f[1];return n.toFixed(2).replace(/\.00$/,'').replace(/0$/,'')}
+function parseLine(line){line=line.replace(/^[-•*]\s*/,'').trim();if(!line)return null;const m=line.match(/^((?:\d+\s+)?\d+\/\d+|\d+(?:\.\d+)?|[½¼¾⅓⅔])\s*(cups?|tbsp|tablespoons?|tsp|teaspoons?|oz|ounces?|lb|lbs|pounds?)?\s+(.+)$/i);if(m)return{id:id(),name:m[3].trim(),qty:fracNum(m[1]),unit:(m[2]||'').toLowerCase(),raw:line,checked:false};const m2=line.match(/^(.+?)\s+((?:\d+\s+)?\d+\/\d+|\d+(?:\.\d+)?|[½¼¾⅓⅔])\s*(cups?|tbsp|tablespoons?|tsp|teaspoons?|oz|ounces?|lb|lbs|pounds?)?$/i);if(m2)return{id:id(),name:m2[1].trim(),qty:fracNum(m2[2]),unit:(m2[3]||'').toLowerCase(),raw:line,checked:false};return{id:id(),name:line,qty:null,unit:'',raw:line,checked:false}}
+function parseIngredients(text){return text.split(/\n|;/).map(parseLine).filter(Boolean)}
+function category(name){name=norm(name);if(/onion|garlic|carrot|lettuce|spinach|cucumber|tomato|potato|ginger|scallion|green onion|pepper|mushroom|cabbage|cilantro|parsley|lemon|lime|apple/.test(name))return'Produce';if(/beef|pork|chicken|turkey|fish|salmon|shrimp|sausage|bacon/.test(name))return'Meat & Seafood';if(/milk|cheese|butter|cream|yogurt|egg/.test(name))return'Dairy & Eggs';if(/frozen/.test(name))return'Frozen';return'Pantry & Other'}
+function compatible(a,b){if(!a.unit&&!b.unit)return true;const ua=unitMap[a.unit],ub=unitMap[b.unit];return!!(ua&&ub&&ua.base===ub.base)}
+function mergeQty(a,b){const ua=unitMap[a.unit],ub=unitMap[b.unit];if(!ua||!ub){a.qty+=b.qty;return}const total=a.qty*ua.f+b.qty*ub.f;if(ua.base==='tsp'){if(total>=48){a.qty=total/48;a.unit='cup'}else if(total>=3){a.qty=total/3;a.unit='tbsp'}else{a.qty=total;a.unit='tsp'}}else if(ua.base==='oz'){if(total>=16){a.qty=total/16;a.unit='lb'}else{a.qty=total;a.unit='oz'}}}
+function addShopping(ing){if(db.pantry.some(p=>norm(p)===norm(ing.name)))return;const ex=db.shopping.find(x=>norm(x.name)===norm(ing.name)&&compatible(x,ing));if(ex&&ing.qty!=null&&ex.qty!=null)mergeQty(ex,ing);else db.shopping.push({...ing,id:id(),category:category(ing.name),checked:false})}
+function saveRecipe(){const title=$('#title').value.trim()||'제목 없는 레시피',url=$('#sourceUrl').value.trim(),raw=$('#rawText').value.trim();const ingredients=parseIngredients(raw);db.recipes.unshift({id:id(),title,url,raw,ingredients,createdAt:Date.now()});$('#title').value='';$('#sourceUrl').value='';$('#rawText').value='';save();toast('레시피 저장됨')}
+function renderRecipes(){const el=$('#recipeList');if(!db.recipes.length){el.innerHTML='<div class="empty">아직 저장한 레시피가 없어요.</div>';return}el.innerHTML=db.recipes.map(r=>`<div class="card"><div class="between"><div><div class="recipe-title">${esc(r.title)}</div><div class="meta">${r.ingredients.length} ingredients</div></div><button class="small danger" onclick="deleteRecipe('${r.id}')">삭제</button></div>${r.url?`<div class="meta" style="margin-top:6px;word-break:break-all">${esc(r.url)}</div>`:''}<ul class="clean">${r.ingredients.map(i=>`<li>${i.qty!=null?`<b>${fmt(i.qty)} ${esc(i.unit)}</b> `:''}${esc(i.name)}</li>`).join('')}</ul><button class="primary" onclick="shopRecipe('${r.id}')">🛒 장보기에 추가</button></div>`).join('')}
+window.deleteRecipe=rid=>{db.recipes=db.recipes.filter(r=>r.id!==rid);save()};window.shopRecipe=rid=>{const r=db.recipes.find(x=>x.id===rid);r.ingredients.forEach(addShopping);save();toast('장보기에 추가됨')};
+function renderShopping(){const el=$('#shoppingList');if(!db.shopping.length){el.innerHTML='<div class="empty">장보기 목록이 비어 있어요.</div>';return}const cats=[...new Set(db.shopping.map(x=>x.category))];el.innerHTML=cats.map(c=>`<div class="sectionTitle">${c}</div><div class="card">${db.shopping.filter(x=>x.category===c).map(i=>`<label class="check"><input type="checkbox" ${i.checked?'checked':''} onchange="toggleShop('${i.id}',this.checked)"><span class="grow ${i.checked?'done':''}">${i.qty!=null?`<b>${fmt(i.qty)} ${esc(i.unit)}</b> `:''}${esc(i.name)}</span><button type="button" class="small danger" onclick="delShop('${i.id}')">×</button></label>`).join('')}</div>`).join('')}
+window.toggleShop=(iid,v)=>{const x=db.shopping.find(i=>i.id===iid);if(x)x.checked=v;save()};window.delShop=iid=>{db.shopping=db.shopping.filter(i=>i.id!==iid);save()};
+function renderPantry(){const el=$('#pantryList');if(!db.pantry.length){el.innerHTML='<div class="empty">Pantry가 비어 있어요.</div>';return}el.innerHTML='<div class="card">'+db.pantry.map((p,i)=>`<div class="between" style="padding:8px 0;border-bottom:1px solid #f1e8e1"><span>${esc(p)}</span><button class="small danger" onclick="delPantry(${i})">삭제</button></div>`).join('')+'</div>'}
+window.delPantry=i=>{db.pantry.splice(i,1);save()};function renderAll(){renderRecipes();renderShopping();renderPantry()}
+function showView(v){['inbox','recipes','shopping','pantry'].forEach(x=>$('#'+x+'View').classList.toggle('hidden',x!==v));$$('.tab').forEach(t=>t.classList.toggle('active',t.dataset.view===v));if(v==='recipes')renderRecipes();if(v==='shopping')renderShopping();if(v==='pantry')renderPantry()}
+$$('.tab').forEach(t=>t.onclick=()=>showView(t.dataset.view));$('#saveRecipeBtn').onclick=saveRecipe;$('#parseBtn').onclick=()=>toast(`${parseIngredients($('#rawText').value).length}개 재료로 인식`);$('#newBtn').onclick=()=>{$('#sourceUrl').value='';$('#title').value='';$('#rawText').value='';$('#title').focus()};
+$('#pasteBtn').onclick=async()=>{try{const t=await navigator.clipboard.readText();if(/^https?:\/\//i.test(t.trim()))$('#sourceUrl').value=t.trim();else $('#rawText').value=t;toast('클립보드에서 가져옴')}catch{toast('클립보드 권한을 허용해 주세요')}};
+$('#addPantry').onclick=()=>{const v=$('#pantryInput').value.trim();if(!v)return;if(!db.pantry.some(p=>norm(p)===norm(v)))db.pantry.push(v);$('#pantryInput').value='';save()};$('#clearChecked').onclick=()=>{db.shopping=db.shopping.filter(x=>!x.checked);save()};
+const qp=new URLSearchParams(location.search),shared=qp.get('share')||qp.get('url')||qp.get('text');if(shared){$('#sourceUrl').value=/^https?:\/\//i.test(shared)?shared:'';if(!$('#sourceUrl').value)$('#rawText').value=shared;const n=$('#importNotice');n.classList.remove('hidden');n.innerHTML='<b>공유에서 가져왔어요.</b><div class="hint" style="margin-top:4px">제목과 내용을 확인한 뒤 저장하세요.</div>';history.replaceState({},'',location.pathname)}
+renderAll();
+</script>
+</body>
+</html>
