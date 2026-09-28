@@ -9,73 +9,432 @@
 <meta name="apple-mobile-web-app-title" content="또기 레시피">
 <title>또기 레시피</title>
 <style>
-:root{--bg:#fffaf5;--card:#fff;--ink:#241f1a;--muted:#7b726a;--accent:#e96835;--line:#eadfd6;--warn:#b86d00}
+:root{--bg:#fffaf5;--card:#fff;--ink:#261f1a;--muted:#7f746b;--accent:#e66a3a;--line:#eaded4;--soft:#f7eee8;--danger:#a94231;--good:#247a55;--warn:#ad6700}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Arial,sans-serif}
-header{position:sticky;top:0;z-index:4;background:rgba(255,250,245,.94);backdrop-filter:blur(14px);padding:calc(env(safe-area-inset-top) + 12px) 16px 12px;border-bottom:1px solid var(--line)}
-h1{font-size:21px;margin:0}.sub{font-size:12px;color:var(--muted);margin-top:3px}main{padding:14px 14px calc(92px + env(safe-area-inset-bottom));max-width:720px;margin:auto}
-.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;margin:0 0 12px;box-shadow:0 4px 18px rgba(54,38,22,.04)}
-.row{display:flex;gap:10px;align-items:center}.grow{flex:1}.between{display:flex;justify-content:space-between;gap:12px;align-items:center}
-button{border:0;border-radius:13px;padding:11px 14px;font-weight:700;font-size:15px;background:#f3e9e1;color:var(--ink)}button.primary{background:var(--accent);color:#fff}button.small{padding:7px 10px;font-size:13px;border-radius:10px}button.danger{background:#fff0ed;color:#a83322}
-input,textarea{width:100%;border:1px solid var(--line);border-radius:12px;padding:11px 12px;font-size:16px;background:#fff;color:var(--ink)}textarea{min-height:110px;resize:vertical}label{display:block;font-size:12px;font-weight:700;color:var(--muted);margin:10px 0 5px}
-.tabs{position:fixed;left:0;right:0;bottom:0;z-index:5;background:rgba(255,255,255,.96);backdrop-filter:blur(16px);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(4,1fr);padding:7px 6px calc(7px + env(safe-area-inset-bottom))}.tab{background:transparent;padding:7px 3px;color:var(--muted);font-size:11px}.tab span{display:block;font-size:22px;line-height:1.2}.tab.active{color:var(--accent)}
-.hidden{display:none!important}.recipe-title{font-size:18px;font-weight:800;margin:0 0 4px}.meta,.hint{font-size:12px;color:var(--muted);line-height:1.5}ul.clean{list-style:none;padding:0;margin:8px 0}ul.clean li{padding:9px 0;border-bottom:1px solid #f1e8e1}ul.clean li:last-child{border:0}.check{display:flex;align-items:flex-start;gap:10px}.check input{width:22px;height:22px;margin-top:0}.done{text-decoration:line-through;color:#a9a19a}.empty{text-align:center;color:var(--muted);padding:32px 12px}.sectionTitle{font-size:14px;font-weight:800;margin:16px 0 8px}.toast{position:fixed;left:50%;bottom:100px;transform:translateX(-50%);background:#231f1c;color:#fff;padding:10px 14px;border-radius:12px;font-size:13px;z-index:10;opacity:0;transition:.2s;pointer-events:none}.toast.show{opacity:1}.hero{padding:16px;background:linear-gradient(135deg,#fff4e8,#fff);border-radius:18px;border:1px solid var(--line);margin-bottom:12px}.hero strong{font-size:19px}.warn{color:var(--warn)}
+header{position:sticky;top:0;z-index:5;background:rgba(255,250,245,.95);backdrop-filter:blur(14px);padding:calc(env(safe-area-inset-top) + 12px) 16px 12px;border-bottom:1px solid var(--line)}
+h1{font-size:24px;margin:0}.sub{font-size:13px;color:var(--muted);margin-top:4px}main{padding:16px 12px calc(94px + env(safe-area-inset-bottom));max-width:760px;margin:auto}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;margin-bottom:13px;box-shadow:0 5px 18px rgba(60,35,20,.04)}
+.hero{background:linear-gradient(135deg,#fff1e8,#fff);border:1px solid var(--line);border-radius:20px;padding:16px;margin-bottom:13px}.hero b{font-size:20px}.hint{font-size:13px;color:var(--muted);line-height:1.5}.warn{color:var(--warn)}.goodText{color:var(--good)}
+label{display:block;font-size:12px;font-weight:800;color:var(--muted);margin:12px 0 6px}input,textarea{width:100%;border:1px solid var(--line);border-radius:13px;background:white;color:var(--ink);font-size:16px;padding:12px}textarea{min-height:104px;resize:vertical}
+.row{display:flex;gap:9px;align-items:center}.grow{flex:1}.between{display:flex;align-items:center;justify-content:space-between;gap:10px}.wrap{flex-wrap:wrap}
+button{border:0;border-radius:13px;background:var(--soft);color:var(--ink);padding:11px 14px;font-size:15px;font-weight:800}button.primary{background:var(--accent);color:white}button.good{background:#e7f5ee;color:var(--good)}button.danger{background:#fff0ec;color:var(--danger)}button.small{font-size:13px;padding:8px 10px}button:disabled{opacity:.45}
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;display:grid;grid-template-columns:repeat(4,1fr);background:rgba(255,255,255,.96);backdrop-filter:blur(16px);border-top:1px solid var(--line);padding:7px 6px calc(7px + env(safe-area-inset-bottom))}.tab{background:transparent;color:var(--muted);font-size:11px;padding:7px 3px}.tab span{font-size:22px;display:block}.tab.active{color:var(--accent)}
+.hidden{display:none!important}.title{font-size:19px;font-weight:900}.meta{font-size:12px;color:var(--muted);line-height:1.4}.chip{display:inline-block;border-radius:999px;background:var(--soft);padding:4px 8px;font-size:11px;color:var(--muted);margin-right:4px;margin-top:5px}
+ul.clean{list-style:none;padding:0;margin:10px 0}ul.clean li{padding:9px 0;border-bottom:1px solid #f1e8e1}ul.clean li:last-child{border-bottom:0}.recipeCard{cursor:pointer}.recipeCard:active{transform:scale(.995)}
+.empty{text-align:center;color:var(--muted);padding:36px 10px}.sectionTitle{font-size:14px;font-weight:900;margin:16px 0 8px}.check{display:flex;gap:10px;align-items:flex-start;padding:8px 0}.check input{width:22px;height:22px;margin:0}.done{text-decoration:line-through;color:#aaa19b}.notice{border-left:4px solid var(--accent);padding-left:12px}
+.toast{position:fixed;z-index:30;left:50%;bottom:105px;transform:translateX(-50%);background:#211d1a;color:white;padding:10px 14px;border-radius:12px;font-size:13px;opacity:0;pointer-events:none;transition:.2s}.toast.show{opacity:1}
+.overlay{position:fixed;inset:0;z-index:20;background:rgba(35,28,24,.28);backdrop-filter:blur(3px);display:flex;align-items:flex-end}.sheet{width:100%;max-height:92vh;overflow:auto;background:var(--bg);border-radius:24px 24px 0 0;padding:16px 14px calc(22px + env(safe-area-inset-bottom));box-shadow:0 -10px 35px rgba(0,0,0,.12)}.sheetHead{position:sticky;top:-16px;background:var(--bg);padding:2px 0 10px;z-index:2}.steps{counter-reset:step;padding:0;margin:10px 0}.steps li{list-style:none;position:relative;padding:10px 0 10px 38px;border-bottom:1px solid #efe5dd}.steps li:before{counter-increment:step;content:counter(step);position:absolute;left:0;top:8px;width:26px;height:26px;border-radius:50%;background:var(--soft);display:grid;place-items:center;font-weight:900;color:var(--accent)}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px}.status{font-size:12px;font-weight:800;margin-top:8px}
+.number{display:inline-grid;place-items:center;width:25px;height:25px;border-radius:50%;background:var(--accent);color:#fff;font-weight:900;font-size:13px;margin-right:7px}.freebox{background:#f0f7f2;border:1px solid #d5eadc}.freebox .title{color:#205c42}.divider{height:1px;background:var(--line);margin:14px 0}
 </style>
 </head>
 <body>
-<header><h1>🍳 또기 레시피</h1><div class="sub">내 아이폰용 레시피 + 장보기</div></header>
+<header><h1>🍳 또기 레시피</h1><div class="sub">추가 API 비용 없이 · ChatGPT Plus 활용</div></header>
+
 <main>
 <section id="inboxView">
-  <div class="hero"><strong>레시피 가져오기</strong><div class="hint" style="margin-top:6px">Instagram · TikTok · YouTube · 웹 레시피 링크를 저장하고 장보기 목록으로 만들어요.</div></div>
-  <div class="card">
-    <div class="row"><button class="primary grow" id="pasteBtn">📋 클립보드 붙여넣기</button><button id="newBtn">＋ 새로</button></div>
-    <label>원본 링크</label><input id="sourceUrl" placeholder="Instagram / TikTok / YouTube / 블로그 URL" inputmode="url">
-    <label>레시피 제목</label><input id="title" placeholder="예: 일본식 다시마 조림">
-    <label>재료 · 설명 텍스트</label><textarea id="rawText" placeholder="한 줄에 재료 하나씩 붙여넣어 주세요.&#10;예) Ground beef 1 lb&#10;Onion 1/2&#10;Soy sauce 2 tbsp"></textarea>
-    <div class="row" style="margin-top:10px"><button class="primary grow" id="saveRecipeBtn">레시피 저장</button><button id="parseBtn">재료 확인</button></div>
-    <div class="hint" style="margin-top:8px">현재 버전은 폰 안에서 기본 재료 파싱을 합니다. AI 자동 추출은 다음 단계에서 서버를 연결하면 됩니다.</div>
+  <div class="hero">
+    <b>레시피 가져오기</b>
+    <div class="hint" style="margin-top:6px">Instagram · TikTok · YouTube에서 <b>또기 레시피로 보내기</b>를 누르면 원본 링크가 들어와요.</div>
   </div>
-  <div id="importNotice" class="card hidden"></div>
+
+  <div id="shareNotice" class="card hidden notice"></div>
+
+  <div class="card">
+    <label>원본 링크</label>
+    <input id="sourceUrl" placeholder="Instagram / TikTok / YouTube / 블로그 URL" inputmode="url">
+    <div class="row" style="margin-top:9px"><button id="openSource" class="grow">🔗 원본 열기</button><button id="pasteLink">📋 붙여넣기</button></div>
+    <label>제목 (몰라도 비워둬도 됨)</label>
+    <input id="title" placeholder="예: 돼지갈비">
+    <label>캡션 · 레시피 텍스트 (있으면 붙여넣기)</label>
+    <textarea id="rawText" placeholder="Instagram 캡션이나 재료/조리법 텍스트가 있으면 붙여넣어 주세요."></textarea>
+  </div>
+
+  <div class="card freebox">
+    <div class="title">💸 무료 AI 추출</div>
+    <div class="hint" style="margin-top:6px">OpenAI API를 쓰지 않고, 지금 쓰는 ChatGPT Plus를 이용해요. 추가 API 비용은 들지 않아요.</div>
+    <div class="divider"></div>
+
+    <div class="hint"><span class="number">1</span>먼저 아래 버튼을 눌러 <b>ChatGPT에 보낼 요청문</b>을 복사해요.</div>
+    <button class="primary" id="copyPrompt" style="width:100%;margin-top:8px">① ChatGPT 추출 요청 복사</button>
+
+    <div class="hint" style="margin-top:14px"><span class="number">2</span>ChatGPT를 열고 붙여넣어 보내요. Instagram을 ChatGPT가 못 읽으면 <b>게시물 캡션이나 스크린샷</b>도 같이 보내면 돼요.</div>
+    <button id="openChatGPT" style="width:100%;margin-top:8px">② ChatGPT 열기</button>
+
+    <div class="hint" style="margin-top:14px"><span class="number">3</span>ChatGPT 답변 전체를 <b>복사</b>한 뒤 여기로 돌아와 아래 버튼을 눌러요.</div>
+    <button class="good" id="pasteAI" style="width:100%;margin-top:8px">③ ChatGPT 결과 붙여넣기</button>
+
+    <div id="aiStatus" class="status"></div>
+  </div>
+
+  <div class="card">
+    <div class="title">텍스트만 빠르게 저장</div>
+    <div class="hint" style="margin-top:5px">AI 없이도 캡션에 재료와 조리법이 적혀 있으면 기본 분리가 가능해요.</div>
+    <div class="row" style="margin-top:10px"><button id="localExtract" class="grow">텍스트에서 기본 추출</button><button id="clearForm">새로</button></div>
+  </div>
+
+  <div id="draftCard" class="card hidden"></div>
 </section>
+
 <section id="recipesView" class="hidden"><div id="recipeList"></div></section>
-<section id="shoppingView" class="hidden"><div class="between"><div><div class="recipe-title">🛒 장보기</div><div class="meta">선택한 레시피 재료를 합쳐서 표시</div></div><button class="small" id="clearChecked">체크 삭제</button></div><div id="shoppingList" style="margin-top:12px"></div></section>
+
+<section id="shoppingView" class="hidden">
+  <div class="between"><div><div class="title">🛒 장보기</div><div class="meta">레시피에서 추가한 재료</div></div><button class="small" id="clearChecked">체크 삭제</button></div>
+  <div id="shoppingList" style="margin-top:12px"></div>
+</section>
+
 <section id="pantryView" class="hidden">
-  <div class="card"><div class="recipe-title">🏠 Pantry</div><div class="hint">집에 항상 있는 재료는 장보기에서 자동 제외돼요.</div><div class="row" style="margin-top:10px"><input id="pantryInput" class="grow" placeholder="예: soy sauce"><button class="primary" id="addPantry">추가</button></div></div>
+  <div class="card"><div class="title">🏠 Pantry</div><div class="hint">집에 있는 재료는 장보기에서 자동 제외돼요.</div><div class="row" style="margin-top:10px"><input id="pantryInput" class="grow" placeholder="예: soy sauce"><button class="primary" id="addPantry">추가</button></div></div>
   <div id="pantryList"></div>
-  <div class="card"><div class="recipe-title">📱 아이폰 설치</div><div class="hint">Safari에서 이 페이지를 연 뒤 <b>공유</b> → <b>홈 화면에 추가</b>를 누르면 앱 아이콘처럼 사용할 수 있어요.</div></div>
+  <div class="card">
+    <div class="title">무료 버전 사용법</div>
+    <div class="hint" style="margin-top:8px">소셜 링크 자체를 이 웹앱이 직접 읽는 건 플랫폼 제한 때문에 어려워요. 대신 ChatGPT Plus에서 분석하고, 결과만 다시 앱으로 가져오는 방식이라 별도 API 결제가 필요 없습니다.</div>
+  </div>
 </section>
 </main>
-<nav class="tabs"><button class="tab active" data-view="inbox"><span>📥</span>받기</button><button class="tab" data-view="recipes"><span>📖</span>레시피</button><button class="tab" data-view="shopping"><span>🛒</span>장보기</button><button class="tab" data-view="pantry"><span>🏠</span>Pantry</button></nav>
-<div class="toast" id="toast"></div>
+
+<nav class="tabs">
+  <button class="tab active" data-view="inbox"><span>📥</span>받기</button>
+  <button class="tab" data-view="recipes"><span>📖</span>레시피</button>
+  <button class="tab" data-view="shopping"><span>🛒</span>장보기</button>
+  <button class="tab" data-view="pantry"><span>🏠</span>Pantry</button>
+</nav>
+
+<div id="toast" class="toast"></div>
+<div id="overlay" class="overlay hidden"><div class="sheet"><div id="sheetBody"></div></div></div>
+
 <script>
-const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
-const KEY='ttogi_recipe_pwa_v1';let db=load();
-function load(){try{return JSON.parse(localStorage.getItem(KEY))||{recipes:[],shopping:[],pantry:[]}}catch{return{recipes:[],shopping:[],pantry:[]}}}
-function save(){localStorage.setItem(KEY,JSON.stringify(db));renderAll()}
-function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1700)}
-function id(){return crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random())}
-function esc(s=''){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function norm(s=''){return s.trim().toLowerCase().replace(/\s+/g,' ')}
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const KEY='ttogi_recipe_free_v3',OLD_KEYS=['ttogi_recipe_pwa_v1','ttogi_recipe_v1','ttogi_recipe_v2'];
+let db=load(),draft=null;
+
+function blankDB(){return{recipes:[],shopping:[],pantry:[]}}
+function load(){
+  try{
+    const now=localStorage.getItem(KEY);
+    if(now)return normalizeDB(JSON.parse(now));
+    for(const k of OLD_KEYS){
+      const raw=localStorage.getItem(k);
+      if(raw){
+        const migrated=normalizeDB(JSON.parse(raw));
+        localStorage.setItem(KEY,JSON.stringify(migrated));
+        return migrated;
+      }
+    }
+  }catch(e){}
+  return blankDB()
+}
+function normalizeDB(x){
+  x=x||blankDB();
+  return{
+    recipes:Array.isArray(x.recipes)?x.recipes.map(r=>({...r,ingredients:Array.isArray(r.ingredients)?r.ingredients:[],steps:Array.isArray(r.steps)?r.steps:[]})):[],
+    shopping:Array.isArray(x.shopping)?x.shopping:[],
+    pantry:Array.isArray(x.pantry)?x.pantry:[]
+  }
+}
+function persist(){localStorage.setItem(KEY,JSON.stringify(db));renderAll()}
+function id(){return crypto.randomUUID?crypto.randomUUID():Date.now()+'-'+Math.random()}
+function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function norm(s=''){return String(s).trim().toLowerCase().replace(/\s+/g,' ')}
+function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800)}
+
+function fracNum(s){
+  if(s===null||s===undefined||s==='')return null;
+  if(typeof s==='number')return Number.isFinite(s)?s:null;
+  s=String(s).trim().replace('½','.5').replace('¼','.25').replace('¾','.75').replace('⅓','.333').replace('⅔','.667');
+  if(/^\d+\s+\d+\/\d+$/.test(s)){let[a,b]=s.split(/\s+/),[n,d]=b.split('/').map(Number);return Number(a)+n/d}
+  if(/^\d+\/\d+$/.test(s)){let[n,d]=s.split('/').map(Number);return n/d}
+  const n=Number(s);return Number.isFinite(n)?n:null
+}
+function fmt(n){
+  if(n==null)return'';
+  if(Math.abs(n-Math.round(n))<.01)return String(Math.round(n));
+  const fr=[[.25,'¼'],[.333,'⅓'],[.5,'½'],[.667,'⅔'],[.75,'¾']];
+  let w=Math.floor(n),r=n-w,f=fr.reduce((a,b)=>Math.abs(b[0]-r)<Math.abs(a[0]-r)?b:a);
+  if(Math.abs(f[0]-r)<.05)return(w?w+' ':'')+f[1];
+  return Number(n).toFixed(2).replace(/0+$/,'').replace(/\.$/,'')
+}
 const unitMap={tsp:{base:'tsp',f:1},teaspoon:{base:'tsp',f:1},teaspoons:{base:'tsp',f:1},tbsp:{base:'tsp',f:3},tablespoon:{base:'tsp',f:3},tablespoons:{base:'tsp',f:3},cup:{base:'tsp',f:48},cups:{base:'tsp',f:48},oz:{base:'oz',f:1},ounce:{base:'oz',f:1},ounces:{base:'oz',f:1},lb:{base:'oz',f:16},lbs:{base:'oz',f:16},pound:{base:'oz',f:16},pounds:{base:'oz',f:16}};
-function fracNum(s){if(!s)return null;s=s.trim().replace('½','.5').replace('¼','.25').replace('¾','.75').replace('⅓','.333').replace('⅔','.667');if(/^\d+\s+\d+\/\d+$/.test(s)){let[a,b]=s.split(/\s+/);let[n,d]=b.split('/').map(Number);return Number(a)+n/d}if(/^\d+\/\d+$/.test(s)){let[n,d]=s.split('/').map(Number);return n/d}let n=Number(s);return Number.isFinite(n)?n:null}
-function fmt(n){if(Math.abs(n-Math.round(n))<.01)return String(Math.round(n));const fr=[[.25,'¼'],[.333,'⅓'],[.5,'½'],[.667,'⅔'],[.75,'¾']];let whole=Math.floor(n),r=n-whole;let f=fr.reduce((a,b)=>Math.abs(b[0]-r)<Math.abs(a[0]-r)?b:a);if(Math.abs(f[0]-r)<.05)return(whole?whole+' ':'')+f[1];return n.toFixed(2).replace(/\.00$/,'').replace(/0$/,'')}
-function parseLine(line){line=line.replace(/^[-•*]\s*/,'').trim();if(!line)return null;const m=line.match(/^((?:\d+\s+)?\d+\/\d+|\d+(?:\.\d+)?|[½¼¾⅓⅔])\s*(cups?|tbsp|tablespoons?|tsp|teaspoons?|oz|ounces?|lb|lbs|pounds?)?\s+(.+)$/i);if(m)return{id:id(),name:m[3].trim(),qty:fracNum(m[1]),unit:(m[2]||'').toLowerCase(),raw:line,checked:false};const m2=line.match(/^(.+?)\s+((?:\d+\s+)?\d+\/\d+|\d+(?:\.\d+)?|[½¼¾⅓⅔])\s*(cups?|tbsp|tablespoons?|tsp|teaspoons?|oz|ounces?|lb|lbs|pounds?)?$/i);if(m2)return{id:id(),name:m2[1].trim(),qty:fracNum(m2[2]),unit:(m2[3]||'').toLowerCase(),raw:line,checked:false};return{id:id(),name:line,qty:null,unit:'',raw:line,checked:false}}
-function parseIngredients(text){return text.split(/\n|;/).map(parseLine).filter(Boolean)}
-function category(name){name=norm(name);if(/onion|garlic|carrot|lettuce|spinach|cucumber|tomato|potato|ginger|scallion|green onion|pepper|mushroom|cabbage|cilantro|parsley|lemon|lime|apple/.test(name))return'Produce';if(/beef|pork|chicken|turkey|fish|salmon|shrimp|sausage|bacon/.test(name))return'Meat & Seafood';if(/milk|cheese|butter|cream|yogurt|egg/.test(name))return'Dairy & Eggs';if(/frozen/.test(name))return'Frozen';return'Pantry & Other'}
-function compatible(a,b){if(!a.unit&&!b.unit)return true;const ua=unitMap[a.unit],ub=unitMap[b.unit];return!!(ua&&ub&&ua.base===ub.base)}
-function mergeQty(a,b){const ua=unitMap[a.unit],ub=unitMap[b.unit];if(!ua||!ub){a.qty+=b.qty;return}const total=a.qty*ua.f+b.qty*ub.f;if(ua.base==='tsp'){if(total>=48){a.qty=total/48;a.unit='cup'}else if(total>=3){a.qty=total/3;a.unit='tbsp'}else{a.qty=total;a.unit='tsp'}}else if(ua.base==='oz'){if(total>=16){a.qty=total/16;a.unit='lb'}else{a.qty=total;a.unit='oz'}}}
-function addShopping(ing){if(db.pantry.some(p=>norm(p)===norm(ing.name)))return;const ex=db.shopping.find(x=>norm(x.name)===norm(ing.name)&&compatible(x,ing));if(ex&&ing.qty!=null&&ex.qty!=null)mergeQty(ex,ing);else db.shopping.push({...ing,id:id(),category:category(ing.name),checked:false})}
-function saveRecipe(){const title=$('#title').value.trim()||'제목 없는 레시피',url=$('#sourceUrl').value.trim(),raw=$('#rawText').value.trim();const ingredients=parseIngredients(raw);db.recipes.unshift({id:id(),title,url,raw,ingredients,createdAt:Date.now()});$('#title').value='';$('#sourceUrl').value='';$('#rawText').value='';save();toast('레시피 저장됨')}
-function renderRecipes(){const el=$('#recipeList');if(!db.recipes.length){el.innerHTML='<div class="empty">아직 저장한 레시피가 없어요.</div>';return}el.innerHTML=db.recipes.map(r=>`<div class="card"><div class="between"><div><div class="recipe-title">${esc(r.title)}</div><div class="meta">${r.ingredients.length} ingredients</div></div><button class="small danger" onclick="deleteRecipe('${r.id}')">삭제</button></div>${r.url?`<div class="meta" style="margin-top:6px;word-break:break-all">${esc(r.url)}</div>`:''}<ul class="clean">${r.ingredients.map(i=>`<li>${i.qty!=null?`<b>${fmt(i.qty)} ${esc(i.unit)}</b> `:''}${esc(i.name)}</li>`).join('')}</ul><button class="primary" onclick="shopRecipe('${r.id}')">🛒 장보기에 추가</button></div>`).join('')}
-window.deleteRecipe=rid=>{db.recipes=db.recipes.filter(r=>r.id!==rid);save()};window.shopRecipe=rid=>{const r=db.recipes.find(x=>x.id===rid);r.ingredients.forEach(addShopping);save();toast('장보기에 추가됨')};
-function renderShopping(){const el=$('#shoppingList');if(!db.shopping.length){el.innerHTML='<div class="empty">장보기 목록이 비어 있어요.</div>';return}const cats=[...new Set(db.shopping.map(x=>x.category))];el.innerHTML=cats.map(c=>`<div class="sectionTitle">${c}</div><div class="card">${db.shopping.filter(x=>x.category===c).map(i=>`<label class="check"><input type="checkbox" ${i.checked?'checked':''} onchange="toggleShop('${i.id}',this.checked)"><span class="grow ${i.checked?'done':''}">${i.qty!=null?`<b>${fmt(i.qty)} ${esc(i.unit)}</b> `:''}${esc(i.name)}</span><button type="button" class="small danger" onclick="delShop('${i.id}')">×</button></label>`).join('')}</div>`).join('')}
-window.toggleShop=(iid,v)=>{const x=db.shopping.find(i=>i.id===iid);if(x)x.checked=v;save()};window.delShop=iid=>{db.shopping=db.shopping.filter(i=>i.id!==iid);save()};
-function renderPantry(){const el=$('#pantryList');if(!db.pantry.length){el.innerHTML='<div class="empty">Pantry가 비어 있어요.</div>';return}el.innerHTML='<div class="card">'+db.pantry.map((p,i)=>`<div class="between" style="padding:8px 0;border-bottom:1px solid #f1e8e1"><span>${esc(p)}</span><button class="small danger" onclick="delPantry(${i})">삭제</button></div>`).join('')+'</div>'}
-window.delPantry=i=>{db.pantry.splice(i,1);save()};function renderAll(){renderRecipes();renderShopping();renderPantry()}
-function showView(v){['inbox','recipes','shopping','pantry'].forEach(x=>$('#'+x+'View').classList.toggle('hidden',x!==v));$$('.tab').forEach(t=>t.classList.toggle('active',t.dataset.view===v));if(v==='recipes')renderRecipes();if(v==='shopping')renderShopping();if(v==='pantry')renderPantry()}
-$$('.tab').forEach(t=>t.onclick=()=>showView(t.dataset.view));$('#saveRecipeBtn').onclick=saveRecipe;$('#parseBtn').onclick=()=>toast(`${parseIngredients($('#rawText').value).length}개 재료로 인식`);$('#newBtn').onclick=()=>{$('#sourceUrl').value='';$('#title').value='';$('#rawText').value='';$('#title').focus()};
-$('#pasteBtn').onclick=async()=>{try{const t=await navigator.clipboard.readText();if(/^https?:\/\//i.test(t.trim()))$('#sourceUrl').value=t.trim();else $('#rawText').value=t;toast('클립보드에서 가져옴')}catch{toast('클립보드 권한을 허용해 주세요')}};
-$('#addPantry').onclick=()=>{const v=$('#pantryInput').value.trim();if(!v)return;if(!db.pantry.some(p=>norm(p)===norm(v)))db.pantry.push(v);$('#pantryInput').value='';save()};$('#clearChecked').onclick=()=>{db.shopping=db.shopping.filter(x=>!x.checked);save()};
-const qp=new URLSearchParams(location.search),shared=qp.get('share')||qp.get('url')||qp.get('text');if(shared){$('#sourceUrl').value=/^https?:\/\//i.test(shared)?shared:'';if(!$('#sourceUrl').value)$('#rawText').value=shared;const n=$('#importNotice');n.classList.remove('hidden');n.innerHTML='<b>공유에서 가져왔어요.</b><div class="hint" style="margin-top:4px">제목과 내용을 확인한 뒤 저장하세요.</div>';history.replaceState({},'',location.pathname)}
+
+function parseIngredient(line){
+  line=String(line||'').replace(/^[-•*]\s*/,'').trim();
+  if(!line)return null;
+  let m=line.match(/^((?:\d+\s+)?\d+\/\d+|\d+(?:\.\d+)?|[½¼¾⅓⅔])\s*(cups?|tbsp|tablespoons?|tsp|teaspoons?|oz|ounces?|lb|lbs|pounds?)?\s+(.+)$/i);
+  if(m)return{id:id(),name:m[3].trim(),qty:fracNum(m[1]),unit:(m[2]||'').toLowerCase(),raw:line};
+  m=line.match(/^(.+?)\s+((?:\d+\s+)?\d+\/\d+|\d+(?:\.\d+)?|[½¼¾⅓⅔])\s*(cups?|tbsp|tablespoons?|tsp|teaspoons?|oz|ounces?|lb|lbs|pounds?)?$/i);
+  if(m)return{id:id(),name:m[1].trim(),qty:fracNum(m[2]),unit:(m[3]||'').toLowerCase(),raw:line};
+  return{id:id(),name:line,qty:null,unit:'',raw:line}
+}
+function splitText(text){
+  const lines=String(text||'').split(/\n+/).map(x=>x.trim()).filter(Boolean);
+  let ing=[],steps=[],mode='ing';
+  for(const l0 of lines){
+    const l=l0.replace(/^#+\s*/,'');
+    if(/^(ingredients?|재료)[:：]?$/i.test(l)){mode='ing';continue}
+    if(/^(directions?|instructions?|method|steps?|만드는\s*법|조리법|방법)[:：]?$/i.test(l)){mode='steps';continue}
+    if(/^\d+[.)]\s+/.test(l)){mode='steps';steps.push(l.replace(/^\d+[.)]\s+/,''));continue}
+    if(mode==='steps')steps.push(l);else ing.push(parseIngredient(l))
+  }
+  return{ingredients:ing.filter(Boolean),steps}
+}
+function category(name){
+  name=norm(name);
+  if(/onion|garlic|carrot|lettuce|spinach|cucumber|tomato|potato|ginger|scallion|green onion|pepper|mushroom|cabbage|cilantro|parsley|lemon|lime|apple|양파|마늘|당근|오이|토마토|감자|생강|파|버섯|배추|레몬/.test(name))return'Produce';
+  if(/beef|pork|chicken|turkey|fish|salmon|shrimp|sausage|bacon|돼지|소고기|닭|새우|연어/.test(name))return'Meat & Seafood';
+  if(/milk|cheese|butter|cream|yogurt|egg|우유|치즈|버터|크림|요거트|계란|달걀/.test(name))return'Dairy & Eggs';
+  if(/frozen|냉동/.test(name))return'Frozen';
+  return'Pantry & Other'
+}
+function compatible(a,b){
+  if(!a.unit&&!b.unit)return true;
+  const ua=unitMap[a.unit],ub=unitMap[b.unit];
+  return!!(ua&&ub&&ua.base===ub.base)
+}
+function mergeQty(a,b){
+  const ua=unitMap[a.unit],ub=unitMap[b.unit];
+  if(!ua||!ub){a.qty=(a.qty||0)+(b.qty||0);return}
+  const total=a.qty*ua.f+b.qty*ub.f;
+  if(ua.base==='tsp'){
+    if(total>=48){a.qty=total/48;a.unit='cup'}
+    else if(total>=3){a.qty=total/3;a.unit='tbsp'}
+    else{a.qty=total;a.unit='tsp'}
+  }else{
+    if(total>=16){a.qty=total/16;a.unit='lb'}
+    else{a.qty=total;a.unit='oz'}
+  }
+}
+function addShopping(ing){
+  if(db.pantry.some(p=>norm(p)===norm(ing.name)))return;
+  const ex=db.shopping.find(x=>norm(x.name)===norm(ing.name)&&compatible(x,ing));
+  if(ex&&ex.qty!=null&&ing.qty!=null)mergeQty(ex,ing);
+  else db.shopping.push({...ing,id:id(),category:category(ing.name),checked:false})
+}
+
+function makePrompt(){
+  const url=$('#sourceUrl').value.trim();
+  const caption=$('#rawText').value.trim();
+  const title=$('#title').value.trim();
+  return `다음 소셜미디어 레시피를 정리해줘.
+
+원본 링크:
+${url || '(없음)'}
+
+사용자가 적은 제목:
+${title || '(없음)'}
+
+캡션/추가 텍스트:
+${caption || '(없음)'}
+
+규칙:
+- 링크 또는 내가 같이 올린 스크린샷/이미지에서 확인되는 내용만 사용해.
+- 링크를 열 수 없거나 재료/양을 확인할 수 없으면 절대 지어내지 말고 status를 "need_caption"으로 해.
+- 레시피를 확인할 수 있으면 status를 "ok"로 해.
+- 재료는 미국에서 장보기 쉽게 영어 이름을 name에 쓰고, 필요하면 note에 한국어 설명을 넣어.
+- 양은 가능하면 미국식 단위 cup, tbsp, tsp, oz, lb로 정리해.
+- 원문에 정확한 양이 없으면 qty는 null, unit은 빈 문자열로 두고 estimated를 true로 해.
+- 조리 순서는 한국어로 간단명료하게.
+- 설명 문장 없이 아래 JSON 하나만 답해. 마크다운 코드블록도 쓰지 마.
+
+{
+  "status": "ok",
+  "title": "요리 이름",
+  "servings": "2 servings",
+  "ingredients": [
+    {"name":"pork ribs","qty":2,"unit":"lb","note":"","estimated":false}
+  ],
+  "steps": [
+    "첫 번째 조리 단계",
+    "두 번째 조리 단계"
+  ]
+}
+
+확인이 불가능한 경우:
+{
+  "status":"need_caption",
+  "message":"링크 내용을 직접 확인할 수 없습니다. 게시물 캡션이나 레시피가 보이는 스크린샷을 보내주세요.",
+  "title":"",
+  "servings":"",
+  "ingredients":[],
+  "steps":[]
+}`;
+}
+
+async function copyPrompt(){
+  const p=makePrompt();
+  try{
+    await navigator.clipboard.writeText(p);
+    $('#aiStatus').innerHTML='<span class="goodText">✓ 복사했어요. 이제 ② ChatGPT 열기를 누르고 붙여넣어 보내세요.</span>';
+    toast('ChatGPT 요청문 복사됨')
+  }catch(e){
+    $('#aiStatus').innerHTML='<span class="warn">자동 복사가 막혔어요. Safari에서 클립보드 권한을 허용한 뒤 다시 눌러주세요.</span>'
+  }
+}
+function openChatGPT(){window.open('https://chatgpt.com/','_blank')}
+
+function extractJSONObject(s){
+  s=String(s||'').trim();
+  s=s.replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'').trim();
+  try{return JSON.parse(s)}catch(e){}
+  const first=s.indexOf('{'),last=s.lastIndexOf('}');
+  if(first>=0&&last>first){
+    const sub=s.slice(first,last+1);
+    try{return JSON.parse(sub)}catch(e){}
+  }
+  return null
+}
+function normalizeRecipe(d,url,text,title){
+  const ingredients=(d.ingredients||[]).map(x=>{
+    if(typeof x==='string')return parseIngredient(x);
+    return{
+      id:id(),
+      name:String(x.name||x.ingredient||'').trim(),
+      qty:fracNum(x.qty??x.quantity),
+      unit:String(x.unit||'').trim().toLowerCase(),
+      note:String(x.note||'').trim(),
+      estimated:Boolean(x.estimated),
+      raw:String(x.raw||'')
+    }
+  }).filter(x=>x&&x.name);
+  return{
+    id:id(),
+    title:d.title||title||'제목 없는 레시피',
+    url,
+    raw:text,
+    ingredients,
+    steps:Array.isArray(d.steps)?d.steps:(Array.isArray(d.instructions)?d.instructions:[]),
+    servings:d.servings||'',
+    createdAt:Date.now()
+  }
+}
+async function pasteAI(){
+  try{
+    const t=await navigator.clipboard.readText();
+    const data=extractJSONObject(t);
+    if(!data){
+      $('#aiStatus').innerHTML='<span class="warn">JSON 형식의 ChatGPT 결과를 찾지 못했어요. ChatGPT 답변 전체를 다시 복사해 주세요.</span>';
+      return
+    }
+    if(data.status==='need_caption'){
+      $('#aiStatus').innerHTML='<span class="warn">'+esc(data.message||'ChatGPT가 링크 내용을 확인하지 못했어요. 캡션이나 스크린샷을 ChatGPT에 추가해 주세요.')+'</span>';
+      return
+    }
+    draft=normalizeRecipe(data,$('#sourceUrl').value.trim(),$('#rawText').value.trim(),$('#title').value.trim());
+    showDraft();
+    $('#aiStatus').innerHTML='<span class="goodText">✓ ChatGPT 결과를 가져왔어요. 아래 미리보기를 확인하고 저장하세요.</span>';
+    toast('레시피 추출 결과 가져옴')
+  }catch(e){
+    $('#aiStatus').innerHTML='<span class="warn">클립보드를 읽을 수 없어요. Safari의 붙여넣기 허용을 눌러주세요.</span>'
+  }
+}
+
+function localExtract(){
+  const text=$('#rawText').value.trim(),title=$('#title').value.trim(),url=$('#sourceUrl').value.trim();
+  if(!text){toast('먼저 캡션/레시피 텍스트를 넣어주세요');return}
+  const parsed=splitText(text);
+  draft={id:id(),title:title||guessTitle(text)||'제목 없는 레시피',url,raw:text,ingredients:parsed.ingredients,steps:parsed.steps,servings:'',createdAt:Date.now()};
+  showDraft();
+  toast('텍스트 기본 추출 완료')
+}
+function guessTitle(t){const l=String(t||'').split(/\n/).map(x=>x.trim()).find(Boolean);return l&&l.length<60?l:''}
+
+function showDraft(){
+  if(!draft)return;
+  const d=$('#draftCard');d.classList.remove('hidden');
+  d.innerHTML=`<div class="between"><div><div class="title">${esc(draft.title)}</div><div class="meta">${draft.ingredients.length} ingredients${draft.steps.length?' · '+draft.steps.length+' steps':''}${draft.servings?' · '+esc(draft.servings):''}</div></div><span class="chip">미리보기</span></div>
+  ${draft.ingredients.length?`<div class="sectionTitle">재료</div><ul class="clean">${draft.ingredients.map(i=>`<li>${i.qty!=null?`<b>${fmt(i.qty)} ${esc(i.unit)}</b> `:''}${esc(i.name)}${i.note?` <span class="meta">(${esc(i.note)})</span>`:''}${i.estimated?` <span class="chip">⚠️ 추정</span>`:''}</li>`).join('')}</ul>`:'<div class="hint warn" style="margin-top:10px">재료가 아직 없어요.</div>'}
+  ${draft.steps.length?`<div class="sectionTitle">조리법</div><ol class="steps">${draft.steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol>`:'<div class="hint warn" style="margin-top:10px">조리법이 아직 없어요.</div>'}
+  <div class="row" style="margin-top:12px"><button class="primary grow" onclick="saveDraft()">💾 내 레시피에 저장</button><button onclick="editDraft()">수정</button></div>`
+}
+window.saveDraft=()=>{
+  if(!draft)return;
+  db.recipes.unshift({...draft});
+  persist();
+  toast('레시피 저장됨');
+  draft=null;
+  $('#draftCard').classList.add('hidden');
+  showView('recipes')
+};
+window.editDraft=()=>{
+  if(!draft)return;
+  $('#title').value=draft.title;
+  $('#rawText').value=[...draft.ingredients.map(i=>`${i.qty!=null?fmt(i.qty)+' ':''}${i.unit?i.unit+' ':''}${i.name}`),...(draft.steps.length?['조리법:',...draft.steps.map((s,i)=>`${i+1}. ${s}`)]:[])].join('\n');
+  showView('inbox')
+};
+
+function renderRecipes(){
+  const el=$('#recipeList');
+  if(!db.recipes.length){el.innerHTML='<div class="empty">아직 저장한 레시피가 없어요.</div>';return}
+  el.innerHTML=db.recipes.map(r=>`<div class="card recipeCard" onclick="openRecipe('${r.id}')"><div class="between"><div><div class="title">${esc(r.title)}</div><div class="meta">${r.ingredients.length} ingredients${r.steps&&r.steps.length?' · '+r.steps.length+' steps':''}</div></div><span style="font-size:22px">›</span></div>${r.url?`<div class="meta" style="margin-top:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(r.url)}</div>`:''}${!r.ingredients.length?'<div class="hint warn" style="margin-top:10px">이전 버전에서 저장된 빈 레시피예요. 열어서 원본 링크를 다시 AI 추출하면 돼요.</div>':''}</div>`).join('')
+}
+window.openRecipe=rid=>{
+  const r=db.recipes.find(x=>x.id===rid);if(!r)return;
+  $('#sheetBody').innerHTML=`<div class="sheetHead between"><div><div class="title">${esc(r.title)}</div><div class="meta">${r.servings?esc(r.servings)+' · ':''}${r.ingredients.length} ingredients</div></div><button onclick="closeSheet()">닫기</button></div>
+  ${r.url?`<button style="width:100%;margin-bottom:10px" onclick="window.open('${esc(r.url)}','_blank')">🔗 원본 열기</button>`:''}
+  <div class="sectionTitle">재료</div>
+  ${r.ingredients.length?`<ul class="clean">${r.ingredients.map(i=>`<li>${i.qty!=null?`<b>${fmt(i.qty)} ${esc(i.unit)}</b> `:''}${esc(i.name)}${i.note?` <span class="meta">(${esc(i.note)})</span>`:''}${i.estimated?` <span class="chip">⚠️ 추정</span>`:''}</li>`).join('')}</ul>`:'<div class="hint warn">재료가 없습니다.</div>'}
+  <div class="sectionTitle">조리법</div>
+  ${r.steps&&r.steps.length?`<ol class="steps">${r.steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol>`:'<div class="hint">저장된 조리법이 없습니다.</div>'}
+  <div class="row wrap" style="margin-top:14px"><button class="primary grow" ${r.ingredients.length?'':'disabled'} onclick="shopRecipe('${r.id}')">🛒 장보기에 추가</button>${r.url?`<button onclick="reExtract('${r.id}')">✨ 다시 추출</button>`:''}<button class="danger" onclick="deleteRecipe('${r.id}')">삭제</button></div>`;
+  $('#overlay').classList.remove('hidden')
+};
+window.closeSheet=()=>$('#overlay').classList.add('hidden');
+$('#overlay').addEventListener('click',e=>{if(e.target.id==='overlay')closeSheet()});
+window.deleteRecipe=rid=>{db.recipes=db.recipes.filter(r=>r.id!==rid);persist();closeSheet();toast('삭제됨')};
+window.shopRecipe=rid=>{const r=db.recipes.find(x=>x.id===rid);if(!r||!r.ingredients.length)return;r.ingredients.forEach(addShopping);persist();toast('장보기에 추가됨')};
+window.reExtract=rid=>{
+  const r=db.recipes.find(x=>x.id===rid);if(!r)return;
+  $('#sourceUrl').value=r.url||'';
+  $('#title').value=r.title||'';
+  $('#rawText').value=r.raw||'';
+  closeSheet();
+  showView('inbox');
+  window.scrollTo({top:0,behavior:'smooth'});
+  toast('원본을 다시 불러왔어요')
+};
+
+function renderShopping(){
+  const el=$('#shoppingList');
+  if(!db.shopping.length){el.innerHTML='<div class="empty">장보기 목록이 비어 있어요.</div>';return}
+  const cats=[...new Set(db.shopping.map(x=>x.category||category(x.name)))];
+  el.innerHTML=cats.map(c=>`<div class="sectionTitle">${c}</div><div class="card">${db.shopping.filter(x=>(x.category||category(x.name))===c).map(i=>`<label class="check"><input type="checkbox" ${i.checked?'checked':''} onchange="toggleShop('${i.id}',this.checked)"><span class="grow ${i.checked?'done':''}">${i.qty!=null?`<b>${fmt(i.qty)} ${esc(i.unit)}</b> `:''}${esc(i.name)}</span><button type="button" class="small danger" onclick="delShop('${i.id}')">×</button></label>`).join('')}</div>`).join('')
+}
+window.toggleShop=(iid,v)=>{const x=db.shopping.find(i=>i.id===iid);if(x)x.checked=v;persist()};
+window.delShop=iid=>{db.shopping=db.shopping.filter(i=>i.id!==iid);persist()};
+
+function renderPantry(){
+  const el=$('#pantryList');
+  el.innerHTML=db.pantry.length?'<div class="card">'+db.pantry.map((p,i)=>`<div class="between" style="padding:8px 0;border-bottom:1px solid #f1e8e1"><span>${esc(p)}</span><button class="small danger" onclick="delPantry(${i})">삭제</button></div>`).join('')+'</div>':'<div class="empty">Pantry가 비어 있어요.</div>'
+}
+window.delPantry=i=>{db.pantry.splice(i,1);persist()};
+
+function renderAll(){renderRecipes();renderShopping();renderPantry()}
+function showView(v){
+  ['inbox','recipes','shopping','pantry'].forEach(x=>$('#'+x+'View').classList.toggle('hidden',x!==v));
+  $$('.tab').forEach(t=>t.classList.toggle('active',t.dataset.view===v));
+  if(v==='recipes')renderRecipes();if(v==='shopping')renderShopping();if(v==='pantry')renderPantry()
+}
+$$('.tab').forEach(t=>t.onclick=()=>showView(t.dataset.view));
+
+$('#copyPrompt').onclick=copyPrompt;
+$('#openChatGPT').onclick=openChatGPT;
+$('#pasteAI').onclick=pasteAI;
+$('#localExtract').onclick=localExtract;
+$('#openSource').onclick=()=>{const u=$('#sourceUrl').value.trim();if(u)window.open(u,'_blank');else toast('먼저 URL을 넣어주세요')};
+$('#pasteLink').onclick=async()=>{try{const t=await navigator.clipboard.readText();if(/^https?:\/\//i.test(t.trim()))$('#sourceUrl').value=t.trim();else $('#rawText').value=t;toast('붙여넣음')}catch{toast('붙여넣기 권한을 허용해 주세요')}};
+$('#clearForm').onclick=()=>{$('#sourceUrl').value='';$('#title').value='';$('#rawText').value='';$('#aiStatus').textContent='';draft=null;$('#draftCard').classList.add('hidden')};
+$('#addPantry').onclick=()=>{const v=$('#pantryInput').value.trim();if(!v)return;if(!db.pantry.some(p=>norm(p)===norm(v)))db.pantry.push(v);$('#pantryInput').value='';persist()};
+$('#clearChecked').onclick=()=>{db.shopping=db.shopping.filter(x=>!x.checked);persist()};
+
+const qp=new URLSearchParams(location.search);
+const shared=qp.get('share')||qp.get('url')||'';
+const text=qp.get('text')||'';
+if(shared||text){
+  if(shared)$('#sourceUrl').value=shared;
+  if(text)$('#rawText').value=text;
+  const n=$('#shareNotice');n.classList.remove('hidden');
+  n.innerHTML='<b>공유에서 링크를 받았어요.</b><div class="hint" style="margin-top:4px">이제 아래 <b>① ChatGPT 추출 요청 복사</b>부터 누르면 돼요.</div>';
+  history.replaceState({},'',location.pathname)
+}
 renderAll();
 </script>
 </body>
