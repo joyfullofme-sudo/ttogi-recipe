@@ -29,7 +29,7 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px}.sta
 </style>
 </head>
 <body>
-<header><h1>🍳 또기 레시피</h1><div class="sub">추가 API 비용 없이 · ChatGPT Plus 활용</div></header>
+<header><h1>🍳 또기 레시피</h1><div class="sub">추가 API 비용 없이 · ChatGPT로 정리</div></header>
 
 <main>
 <section id="inboxView">
@@ -51,8 +51,8 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px}.sta
   </div>
 
   <div class="card freebox">
-    <div class="title">💸 무료 AI 추출</div>
-    <div class="hint" style="margin-top:6px">OpenAI API를 쓰지 않고, 지금 쓰는 ChatGPT Plus를 이용해요. 추가 API 비용은 들지 않아요.</div>
+    <div class="title">💸 무료 ChatGPT 정리</div>
+    <div class="hint" style="margin-top:6px">별도 API를 쓰지 않고 ChatGPT에서 레시피를 정리한 뒤 결과만 이 앱으로 가져와요. 추가 API 비용은 들지 않아요.</div>
     <div class="divider"></div>
 
     <div class="hint"><span class="number">1</span>먼저 아래 버튼을 눌러 <b>ChatGPT에 보낼 요청문</b>을 복사해요.</div>
@@ -62,9 +62,20 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px}.sta
     <button id="openChatGPT" style="width:100%;margin-top:8px">② ChatGPT 열기</button>
 
     <div class="hint" style="margin-top:14px"><span class="number">3</span>ChatGPT 답변 전체를 <b>복사</b>한 뒤 여기로 돌아와 아래 버튼을 눌러요.</div>
-    <button class="good" id="pasteAI" style="width:100%;margin-top:8px">③ ChatGPT 결과 붙여넣기</button>
+    <button class="good" id="pasteAI" style="width:100%;margin-top:8px">③ 완성된 JSON 결과 붙여넣기</button>
 
     <div id="aiStatus" class="status"></div>
+
+    <div id="needMoreBox" class="card hidden" style="margin:12px 0 0;background:#fff8e8;border-color:#edd9a5">
+      <div class="title">📎 추가 자료가 필요해요</div>
+      <div id="needMoreMessage" class="hint" style="margin-top:6px"></div>
+      <div class="hint" style="margin-top:10px"><b>링크 주소는 이미 정상적으로 들어왔어요.</b> Instagram/TikTok이 게시물 내용을 외부에 바로 보여주지 않을 때만 이 단계가 필요해요.</div>
+      <div class="divider"></div>
+      <div class="hint"><b>방법 A · 캡션이 있으면</b><br>Instagram의 게시물 캡션을 복사해서 위의 ‘캡션 · 레시피 텍스트’ 칸에 붙여넣고 <b>① ChatGPT 추출 요청 복사</b>를 다시 눌러요.</div>
+      <button id="focusCaption" style="width:100%;margin-top:8px">📝 캡션 붙여넣으러 가기</button>
+      <div class="hint" style="margin-top:12px"><b>방법 B · 사진/영상에 레시피가 있으면</b><br>아래 버튼으로 요청문을 복사한 뒤 ChatGPT에 돌아가서 레시피가 보이는 스크린샷을 첨부해요.</div>
+      <div class="row" style="margin-top:8px"><button id="copyFollowup" class="grow">📋 스크린샷용 문구 복사</button><button id="openChatGPTAgain">ChatGPT 열기</button></div>
+    </div>
   </div>
 
   <div class="card">
@@ -105,7 +116,7 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px}.sta
 
 <script>
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
-const KEY='ttogi_recipe_free_v3',OLD_KEYS=['ttogi_recipe_pwa_v1','ttogi_recipe_v1','ttogi_recipe_v2'];
+const KEY='ttogi_recipe_free_v4',OLD_KEYS=['ttogi_recipe_free_v3','ttogi_recipe_pwa_v1','ttogi_recipe_v1','ttogi_recipe_v2'];
 let db=load(),draft=null;
 
 function blankDB(){return{recipes:[],shopping:[],pantry:[]}}
@@ -227,7 +238,7 @@ ${caption || '(없음)'}
 
 규칙:
 - 링크 또는 내가 같이 올린 스크린샷/이미지에서 확인되는 내용만 사용해.
-- 링크를 열 수 없거나 재료/양을 확인할 수 없으면 절대 지어내지 말고 status를 "need_caption"으로 해.
+- URL 주소 자체는 이미 받은 상태야. 다만 링크 안의 캡션/사진/영상 내용을 실제로 확인할 수 없거나 재료/양을 확인할 수 없으면 절대 지어내지 말고 status를 "need_caption"으로 해.
 - 레시피를 확인할 수 있으면 status를 "ok"로 해.
 - 재료는 미국에서 장보기 쉽게 영어 이름을 name에 쓰고, 필요하면 note에 한국어 설명을 넣어.
 - 양은 가능하면 미국식 단위 cup, tbsp, tsp, oz, lb로 정리해.
@@ -251,7 +262,7 @@ ${caption || '(없음)'}
 확인이 불가능한 경우:
 {
   "status":"need_caption",
-  "message":"링크 내용을 직접 확인할 수 없습니다. 게시물 캡션이나 레시피가 보이는 스크린샷을 보내주세요.",
+  "message":"주소는 정상적으로 받았지만 게시물 내용을 직접 확인할 수 없습니다. 게시물 캡션이나 레시피가 보이는 스크린샷을 보내주세요.",
   "title":"",
   "servings":"",
   "ingredients":[],
@@ -260,6 +271,7 @@ ${caption || '(없음)'}
 }
 
 async function copyPrompt(){
+  $('#needMoreBox').classList.add('hidden');
   const p=makePrompt();
   try{
     await navigator.clipboard.writeText(p);
@@ -306,6 +318,21 @@ function normalizeRecipe(d,url,text,title){
     createdAt:Date.now()
   }
 }
+function showNeedMore(message){
+  const msg=message||'주소는 정상적으로 받았지만 게시물 내용을 직접 확인할 수 없어요. 캡션이나 레시피가 보이는 스크린샷이 필요해요.';
+  $('#aiStatus').innerHTML='<span class="warn">📎 추가 자료 필요 — 실패가 아니에요.</span>';
+  $('#needMoreMessage').textContent=msg;
+  $('#needMoreBox').classList.remove('hidden');
+  $('#needMoreBox').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+async function copyFollowup(){
+  const p='위 레시피 요청을 계속 처리해줘. 지금 게시물 캡션이나 레시피가 보이는 스크린샷을 추가로 보낼게. 내가 보내는 자료에서 확인되는 내용만 사용하고, 추측하지 마. 확인이 되면 이전에 요청한 형식 그대로 status를 "ok"로 해서 JSON 하나만 답해줘. 마크다운 코드블록이나 설명 문장은 쓰지 마.';
+  try{
+    await navigator.clipboard.writeText(p);
+    toast('스크린샷용 문구 복사됨');
+  }catch(e){toast('복사가 막혔어요. Safari 클립보드 권한을 확인해 주세요')}
+}
+
 async function pasteAI(){
   try{
     const t=await navigator.clipboard.readText();
@@ -315,9 +342,11 @@ async function pasteAI(){
       return
     }
     if(data.status==='need_caption'){
-      $('#aiStatus').innerHTML='<span class="warn">'+esc(data.message||'ChatGPT가 링크 내용을 확인하지 못했어요. 캡션이나 스크린샷을 ChatGPT에 추가해 주세요.')+'</span>';
+      showNeedMore(data.message);
+      toast('추가 자료가 필요해요');
       return
     }
+    $('#needMoreBox').classList.add('hidden');
     draft=normalizeRecipe(data,$('#sourceUrl').value.trim(),$('#rawText').value.trim(),$('#title').value.trim());
     showDraft();
     $('#aiStatus').innerHTML='<span class="goodText">✓ ChatGPT 결과를 가져왔어요. 아래 미리보기를 확인하고 저장하세요.</span>';
@@ -418,10 +447,17 @@ $$('.tab').forEach(t=>t.onclick=()=>showView(t.dataset.view));
 $('#copyPrompt').onclick=copyPrompt;
 $('#openChatGPT').onclick=openChatGPT;
 $('#pasteAI').onclick=pasteAI;
+$('#focusCaption').onclick=()=>{
+  $('#rawText').focus();
+  $('#rawText').scrollIntoView({behavior:'smooth',block:'center'});
+  toast('Instagram 캡션을 여기에 붙여넣으세요')
+};
+$('#copyFollowup').onclick=copyFollowup;
+$('#openChatGPTAgain').onclick=openChatGPT;
 $('#localExtract').onclick=localExtract;
 $('#openSource').onclick=()=>{const u=$('#sourceUrl').value.trim();if(u)window.open(u,'_blank');else toast('먼저 URL을 넣어주세요')};
 $('#pasteLink').onclick=async()=>{try{const t=await navigator.clipboard.readText();if(/^https?:\/\//i.test(t.trim()))$('#sourceUrl').value=t.trim();else $('#rawText').value=t;toast('붙여넣음')}catch{toast('붙여넣기 권한을 허용해 주세요')}};
-$('#clearForm').onclick=()=>{$('#sourceUrl').value='';$('#title').value='';$('#rawText').value='';$('#aiStatus').textContent='';draft=null;$('#draftCard').classList.add('hidden')};
+$('#clearForm').onclick=()=>{$('#sourceUrl').value='';$('#title').value='';$('#rawText').value='';$('#aiStatus').textContent='';$('#needMoreBox').classList.add('hidden');draft=null;$('#draftCard').classList.add('hidden')};
 $('#addPantry').onclick=()=>{const v=$('#pantryInput').value.trim();if(!v)return;if(!db.pantry.some(p=>norm(p)===norm(v)))db.pantry.push(v);$('#pantryInput').value='';persist()};
 $('#clearChecked').onclick=()=>{db.shopping=db.shopping.filter(x=>!x.checked);persist()};
 
