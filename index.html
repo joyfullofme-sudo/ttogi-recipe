@@ -61,8 +61,9 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px}.sta
     <div class="hint" style="margin-top:14px"><span class="number">2</span>ChatGPT를 열고 붙여넣어 보내요. Instagram을 ChatGPT가 못 읽으면 <b>게시물 캡션이나 스크린샷</b>도 같이 보내면 돼요.</div>
     <button id="openChatGPT" style="width:100%;margin-top:8px">② ChatGPT 열기</button>
 
-    <div class="hint" style="margin-top:14px"><span class="number">3</span>ChatGPT 답변 전체를 <b>복사</b>한 뒤 여기로 돌아와 아래 버튼을 눌러요.</div>
-    <button class="good" id="pasteAI" style="width:100%;margin-top:8px">③ 완성된 JSON 결과 붙여넣기</button>
+    <div class="hint" style="margin-top:14px"><span class="number">3</span>ChatGPT 답변을 복사해 아래 칸을 길게 눌러 <b>붙여넣기</b>한 뒤 버튼을 눌러요.</div>
+    <textarea id="aiResult" aria-label="ChatGPT JSON 답변" placeholder="ChatGPT 답변의 { 부터 } 까지 여기에 붙여넣으세요." style="margin-top:8px;min-height:110px"></textarea>
+    <button class="good" id="pasteAI" style="width:100%;margin-top:8px">③ 붙여넣은 결과 가져오기</button>
 
     <div id="aiStatus" class="status"></div>
 
@@ -334,26 +335,35 @@ async function copyFollowup(){
 }
 
 async function pasteAI(){
-  try{
-    const t=await navigator.clipboard.readText();
-    const data=extractJSONObject(t);
-    if(!data){
-      $('#aiStatus').innerHTML='<span class="warn">JSON 형식의 ChatGPT 결과를 찾지 못했어요. ChatGPT 답변 전체를 다시 복사해 주세요.</span>';
+  let t=$('#aiResult').value.trim();
+  if(!t){
+    try{t=(await navigator.clipboard.readText()).trim()}
+    catch(e){
+      $('#aiStatus').innerHTML='<span class="warn">위 칸을 길게 눌러 ChatGPT 답변을 붙여넣어 주세요.</span>';
+      $('#aiResult').focus();
       return
     }
-    if(data.status==='need_caption'){
-      showNeedMore(data.message);
-      toast('추가 자료가 필요해요');
-      return
-    }
-    $('#needMoreBox').classList.add('hidden');
-    draft=normalizeRecipe(data,$('#sourceUrl').value.trim(),$('#rawText').value.trim(),$('#title').value.trim());
-    showDraft();
-    $('#aiStatus').innerHTML='<span class="goodText">✓ ChatGPT 결과를 가져왔어요. 아래 미리보기를 확인하고 저장하세요.</span>';
-    toast('레시피 추출 결과 가져옴')
-  }catch(e){
-    $('#aiStatus').innerHTML='<span class="warn">클립보드를 읽을 수 없어요. Safari의 붙여넣기 허용을 눌러주세요.</span>'
   }
+  const data=extractJSONObject(t);
+  if(!data||!['ok','need_caption'].includes(data.status)){
+    $('#aiStatus').innerHTML='<span class="warn">레시피 JSON을 찾지 못했어요. ChatGPT의 답변에서 { 부터 } 까지 복사해 위 칸에 붙여넣어 주세요.</span>';
+    $('#aiResult').focus();
+    return
+  }
+  if(data.status==='need_caption'){
+    showNeedMore(data.message);
+    toast('추가 자료가 필요해요');
+    return
+  }
+  if(!Array.isArray(data.ingredients)||!Array.isArray(data.steps)){
+    $('#aiStatus').innerHTML='<span class="warn">재료와 조리 순서가 있는 ChatGPT JSON 답변을 붙여넣어 주세요.</span>';
+    return
+  }
+  $('#needMoreBox').classList.add('hidden');
+  draft=normalizeRecipe(data,$('#sourceUrl').value.trim(),$('#rawText').value.trim(),$('#title').value.trim());
+  showDraft();
+  $('#aiStatus').innerHTML='<span class="goodText">✓ ChatGPT 결과를 가져왔어요. 아래 미리보기를 확인하고 저장하세요.</span>';
+  toast('레시피 추출 결과 가져옴')
 }
 
 function localExtract(){
